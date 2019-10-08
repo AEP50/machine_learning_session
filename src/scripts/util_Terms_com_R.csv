@@ -1,0 +1,16 @@
+ikey,script,Protected,Offset,Reference,Start,End
+2,(sectr == 1),1,,,,
+2,(sectr == 2),1,,,,
+0,(num_adults == 1),1,,1,0,3
+3,(num_adults == 2),1,,2,0,3
+3,(num_adults >= 3),1,,3,0,3
+2,(incom == 1),1,,,,
+2,(incom == 2),1,,,,
+2,(incom == 4),1,,,,
+2,(incom == 5),1,,,,
+2,(incom  > 5),1,,,,
+2,tran_access,1,,,,
+0,non_mot_access,1,,4,0,0
+0,auto_access,1,,,,
+2,numWorkers,1,,,,
+0,hh_auto_dep,1,,,,
