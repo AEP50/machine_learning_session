@@ -308,6 +308,13 @@ utilExpr <- CalcUtilityExpr(utiltyExprFile)
 # convert into mlogit data
 mlogitDataAvail <- mlogit.data(filter(hh_long, useest == 1),shape="long",chid.var = c("sampn"), alt.var = "altid", choice = "choiceBoolean", labels=c("0 Car","1 Car","2 Cars","3+ Cars"))
 
+# Write the model data to file
+write.csv(x=filter(hh_long, useest == 1),
+          file="./data/mnl_training_data_long_increased_tran_access.csv",
+          sep=",",
+          row.names=FALSE,
+          col.names=TRUE)
+
 
 #res <- mlogit(as.formula(choiceBoolean ~ 0|1),data=mlogitDataAvail, nests=list(zero_car='1',one_plus=c('2','3','4')), unscaled=TRUE, reflevel = '2',print.level=2)
 res <- mlogit(as.formula(utilExpr),data=mlogitDataAvail, weights=useest, panel=FALSE, reflevel = '1',print.level=2)
