@@ -1,13 +1,15 @@
 # Script to file for estimation
 
-#install.packages("dplyr")
-#install.packages("foreign")
-#install.packages("readr")
-#install.packages("mosaic")
-#install.packages("lazyeval")
-#install.packages("DataCombine")
-#install.packages("mlogit")
+# Install needed libraries
+# install.packages("dplyr")
+# install.packages("foreign")
+# install.packages("readr")
+# install.packages("mosaic")
+# install.packages("lazyeval")
+# install.packages("DataCombine")
+# install.packages("mlogit")
 
+# Load the needed libraries
 library(dplyr)
 library(foreign)
 library(readr)
@@ -17,6 +19,9 @@ library(DataCombine)
 library(broom)
 library(mlogit)
 library(reshape2)
+
+# Set the working directory
+setwd("./Downloads/TRB_ML_Files/")
 
 hh <- read_csv("./data/hhtype.csv")
 per <- read_csv("./data/pertype.csv")
@@ -301,12 +306,31 @@ utilExpr <- CalcUtilityExpr(utiltyExprFile)
 
 ## ALL sample
 # convert into mlogit data
-mlogitDataAvail <- mlogit.data(hh_long,shape="long",chid.var = c("sampn"), alt.var = "altid", choice = "choiceBoolean", labels=c("0 Car","1 Car","2 Cars","3+ Cars"))
+mlogitDataAvail <- mlogit.data(hh_long,
+                               shape="long",
+                               chid.var = c("sampn"),
+                               alt.var = "altid",
+                               choice = "choiceBoolean",
+                               labels=c("0 Car","1 Car","2 Cars","3+ Cars"))
 
 
 #res <- mlogit(as.formula(choiceBoolean ~ 0|1), data=mlogitDataAvail, nests=list(zero_car=c('1') ,one_plus=c('2','3','4')), unscaled=FALSE, reflevel = '2',print.level=2, un.nest.el = TRUE)
 
-res <- mlogit(as.formula(utilExpr),data=mlogitDataAvail, panel=FALSE, reflevel = '1',print.level=2)
+# Write the model data to file
+write.csv(x=hh_long,
+          file="./data/mnl_training_data_long_all_sample.csv",
+          sep=",",
+          row.names=FALSE,
+          col.names=TRUE)
+
+# View the formula for the model
+print(as.formula(utilExpr))
+
+res <- mlogit(as.formula(utilExpr),
+              data=mlogitDataAvail,
+              panel=FALSE,
+              reflevel = '1',
+              print.level=2)
 
 Table_res <- data.frame(summary(res)$CoefTable)
 write.csv(Table_res[c(1:4)],file="est_results.csv")
@@ -326,10 +350,19 @@ write_csv(pred_prob, "mnl_prob_all.csv")
 
 
 ## 50-50 random
-mlogitDataAvail <- mlogit.data(hh_long,shape="long",chid.var = c("sampn"), alt.var = "altid", choice = "choiceBoolean", labels=c("0 Car","1 Car","2 Cars","3+ Cars"))
+mlogitDataAvail <- mlogit.data(hh_long,
+                               shape="long",
+                               chid.var = c("sampn"),
+                               alt.var = "altid",
+                               choice = "choiceBoolean",
+                               labels=c("0 Car","1 Car","2 Cars","3+ Cars"))
 
-
-res <- mlogit(as.formula(utilExpr),data=mlogitDataAvail,weights=weights_random, panel = FALSE,reflevel = '1',print.level=1)
+res <- mlogit(as.formula(utilExpr),
+              data=mlogitDataAvail,
+              weights=weights_random,
+              panel = FALSE,
+              reflevel = '1',
+              print.level=1)
 
 
 Table_res <- data.frame(summary(res)$CoefTable)
